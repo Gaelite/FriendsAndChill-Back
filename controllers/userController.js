@@ -52,13 +52,10 @@ exports.loginUser = async (req, res) => {
       return res.status(400).json({ error: 'Contraseña incorrecta' });
     }
 
-    const token = jwt.sign(
-      { id: user._id, email: user.email },
-      process.env.JWT_SECRET // <-- revisa que no sea undefined
-    );
+    // En lugar de generar un token nuevo, devuelve el existente
+    console.log("Token existente:", user.token);
+    return res.status(200).json({ token: user.token });
 
-    console.log("Token generado:", token);
-    return res.status(200).json({ token });
   } catch (err) {
     console.error("Error de login:", err);
     return res.status(500).json({ error: 'Error en el inicio de sesión', erra: err.message });
@@ -67,6 +64,6 @@ exports.loginUser = async (req, res) => {
 
 
 exports.getUsers = async (req, res) => {
-  const users = await User.find();
+  const users = await User.find({}, '-token'); // excluye el campo "token"
   res.json(users);
 };

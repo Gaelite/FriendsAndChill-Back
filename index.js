@@ -2,6 +2,10 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose'); // Requiere Mongoose
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const swaggerDocument = YAML.load('./swagger.yaml');
+
 require('dotenv').config();
 
 // 2. Inicializa la app de Express
@@ -9,6 +13,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // 3. Requiere tus rutas y middleware
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument)); //http://localhost:3000/api-docs para ver sawagger
 const userRoutes = require('./routes/userRoutes');
 
 // 4. Middleware global

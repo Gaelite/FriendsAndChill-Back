@@ -4,7 +4,7 @@ const userController = require('../controllers/userController');
 const router = express.Router();
 
 router.get('/get-users', authMiddleware, userController.getUsers);
-router.get('/login', userController.loginUser);
+router.post('/login', userController.loginUser);
 router.post('/register', userController.createUser);
 
 module.exports = router;
