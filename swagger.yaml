@@ -1,0 +1,106 @@
+openapi: 3.0.0
+info:
+  title: FriendsAndChill API
+  version: 1.0.0
+  description: API para autenticación y usuarios
+
+servers:
+  - url: http://localhost:3000
+
+paths:
+  /register:
+    post:
+      summary: Crear nuevo usuario
+      tags:
+        - Usuarios
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - email
+                - password
+              properties:
+                username:
+                  type: string
+                  example: eduardo
+                email:
+                  type: string
+                  example: eduardo@example.com
+                password:
+                  type: string
+                  example: mysecurepassword
+      responses:
+        '201':
+          description: Usuario creado exitosamente
+        '400':
+          description: El usuario ya existe o error al crear
+
+  /login:
+    post:
+      summary: Iniciar sesión de usuario
+      tags:
+        - Usuarios
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  example: eduardo@example.com
+                password:
+                  type: string
+                  example: mysecurepassword
+      responses:
+        '200':
+          description: Login exitoso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6...
+        '400':
+          description: Usuario no encontrado o contraseña incorrecta
+
+
+  /users:
+    get:
+      summary: Obtener todos los usuarios
+      tags:
+        - Usuarios
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Token JWT en el encabezado (Bearer token)
+      responses:
+        '200':
+          description: Lista de usuarios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    username:
+                      type: string
+                      example: eduardo
+                    email:
+                      type: string
+                      example: eduardo@example.com
+
