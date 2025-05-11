@@ -13,7 +13,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // 3. Requiere tus rutas y middleware
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument)); //http://localhost:3000/api-docs para ver sawagger
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument)); //http://localhost:3000/api-docs para ver swagger
 const userRoutes = require('./routes/userRoutes');
 
 // 4. Middleware global
