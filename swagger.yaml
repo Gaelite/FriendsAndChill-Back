@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: FriendsAndChill API
   version: 1.0.0
-  description: API para autenticación y usuarios
+  description: API para autenticación de usuarios y gestión de amigos.
 
 servers:
   - url: http://localhost:3000
@@ -37,7 +37,7 @@ paths:
         '201':
           description: Usuario creado exitosamente
         '400':
-          description: El usuario ya existe o error al crear
+          description: El email o username ya están en uso
 
   /login:
     post:
@@ -68,25 +68,22 @@ paths:
               schema:
                 type: object
                 properties:
+                  username:
+                    type: string
+                    example: eduardo
                   token:
                     type: string
                     example: eyJhbGciOiJIUzI1NiIsInR5cCI6...
         '400':
           description: Usuario no encontrado o contraseña incorrecta
 
-
-  /users:
+  /getUsers:
     get:
       summary: Obtener todos los usuarios
       tags:
         - Usuarios
-      parameters:
-        - name: Authorization
-          in: header
-          required: true
-          schema:
-            type: string
-          description: Token JWT en el encabezado (Bearer token)
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Lista de usuarios
@@ -104,3 +101,197 @@ paths:
                       type: string
                       example: eduardo@example.com
 
+  /sendFriendRequest:
+    post:
+      summary: Enviar solicitud de amistad
+      tags:
+        - Amigos
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - toUserName
+              properties:
+                toUserName:
+                  type: string
+                  example: maria
+      responses:
+        '200':
+          description: Solicitud de amistad enviada exitosamente
+        '400':
+          description: Ya son amigos, solicitud ya enviada, o no puedes agregarte a ti mismo
+        '404':
+          description: Usuario receptor no encontrado
+
+  /acceptFriendRequest:
+    post:
+      summary: Aceptar solicitud de amistad
+      tags:
+        - Amigos
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - requesterUserName
+              properties:
+                requesterUserName:
+                  type: string
+                  example: eduardo
+      responses:
+        '200':
+          description: Solicitud aceptada y ahora son amigos
+        '400':
+          description: No tienes solicitud de este usuario
+        '404':
+          description: Usuario solicitante no encontrado
+
+  /rejectFriendRequest:
+    post:
+      summary: Rechazar solicitud de amistad
+      tags:
+        - Amigos
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - requesterUserName
+              properties:
+                requesterUserName:
+                  type: string
+                  example: eduardo
+      responses:
+        '200':
+          description: Solicitud rechazada exitosamente
+        '400':
+          description: No tienes solicitud de este usuario
+        '404':
+          description: Usuario solicitante no encontrado
+
+  /getFriendRequestsReceived:
+    get:
+      summary: Obtener solicitudes de amistad recibidas
+      tags:
+        - Amigos
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de solicitudes recibidas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    username:
+                      type: string
+                      example: juan
+                    email:
+                      type: string
+                      example: juan@example.com
+
+  /getFriends:
+    get:
+      summary: Obtener lista de amigos del usuario actual
+      tags:
+        - Amigos
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de amigos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    username:
+                      type: string
+                      example: maria
+                    email:
+                      type: string
+                      example: maria@example.com
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  /searchUser/{username}:
+      get:
+        summary: Buscar un usuario por su nombre de usuario
+        tags:
+          - Usuarios
+        parameters:
+          - name: username
+            in: path
+            required: true
+            schema:
+              type: string
+            description: Nombre de usuario a buscar
+          - name: Authorization
+            in: header
+            required: true
+            schema:
+              type: string
+              example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6...
+            description: Token JWT para autenticación
+        responses:
+          '200':
+            description: Usuario encontrado exitosamente
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      example: 6612a9cf6b2f33a4df12c3e0
+                    username:
+                      type: string
+                      example: maria
+                    email:
+                      type: string
+                      example: maria@example.com
+          '404':
+            description: Usuario no encontrado
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: Usuario no encontrado
+          '500':
+            description: Error del servidor
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: Error del servidor
+                    error:
+                      type: string
