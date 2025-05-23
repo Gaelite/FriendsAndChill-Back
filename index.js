@@ -29,6 +29,9 @@ mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log('Conexión a MongoDB exitosa')) // Si se conecta correctamente
 .catch((err) => console.error('Error al conectar a MongoDB:', err)); // Si ocurre un error
 
+// 3. Requiere tus rutas y middleware
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument)); //http://localhost:3000/api-docs para ver swagger
+const userRoutes = require('./routes/userRoutes');
 // 6. Rutas protegidas (requieren autenticación)
 app.use('/api/users', userRoutes);
 app.use('/api/emotion', emotionRoutes);
@@ -39,3 +42,6 @@ app.use('/api/watchlists', watchlistRoutes);
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
+
+
