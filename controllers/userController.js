@@ -2,11 +2,11 @@ const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
+
 exports.createUser = async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-    // Verificar si ya existe un usuario con ese email o username
     const existingUser = await User.findOne({
       $or: [{ email }, { username }]
     });
@@ -19,8 +19,11 @@ exports.createUser = async (req, res) => {
       });
     }
 
-    // Crear usuario
-    const newUser = new User({ username, email, password });
+    // 🔐 Encriptar contraseña
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const newUser = new User({ username, email, password: hashedPassword });
     await newUser.save();
 
     res.status(201).json({ message: 'Usuario creado con éxito.' });

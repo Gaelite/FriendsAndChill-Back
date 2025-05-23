@@ -295,3 +295,61 @@ components:
                       example: Error del servidor
                     error:
                       type: string
+
+paths:
+  /api/emotion/predict:
+    post:
+      summary: Obtener recomendación de película basada en emociones detectadas
+      tags:
+        - Emociones
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                texto:
+                  type: string
+                  example: "Quiero ver algo que me haga sentir esperanza"
+      responses:
+        '200':
+          description: Película recomendada con emociones detectadas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  emociones:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        nombre:
+                          type: string
+                          example: joy
+                        confianza:
+                          type: number
+                          example: 0.832
+                  generos_usados:
+                    type: array
+                    items:
+                      type: string
+                      example: Comedy
+                  pelicula_recomendada:
+                    type: object
+                    nullable: true
+                    properties:
+                      title:
+                        type: string
+                        example: "Inside Out"
+                      vote_average:
+                        type: number
+                        example: 8.1
+                      overview:
+                        type: string
+                        example: "Una niña lidia con emociones que toman el control de su mente."
+        '400':
+          description: Error por falta de parámetro
+        '500':
+          description: Error interno del servidor
