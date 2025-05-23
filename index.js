@@ -31,7 +31,6 @@ mongoose.connect(process.env.MONGO_URI)
 
 // 3. Requiere tus rutas y middleware
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument)); //http://localhost:3000/api-docs para ver swagger
-const userRoutes = require('./routes/userRoutes');
 // 6. Rutas protegidas (requieren autenticación)
 app.use('/api/users', userRoutes);
 app.use('/api/emotion', emotionRoutes);
