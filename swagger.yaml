@@ -353,3 +353,271 @@ paths:
           description: Error por falta de parámetro
         '500':
           description: Error interno del servidor
+paths:
+  /api/groups:
+    post:
+      summary: Crear un nuevo grupo
+      tags:
+        - Grupos
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Cine Club de Amigos
+      responses:
+        '201':
+          description: Grupo creado exitosamente
+        '400':
+          description: El grupo ya existe o datos inválidos
+        '500':
+          description: Error interno del servidor
+
+  /api/groups/{groupId}/add-member:
+    post:
+      summary: Agregar un miembro al grupo (solo si es amigo)
+      tags:
+        - Grupos
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: maria
+      responses:
+        '200':
+          description: Usuario agregado exitosamente
+        '400':
+          description: El usuario no es amigo o ya es miembro
+        '404':
+          description: Grupo o usuario no encontrado
+        '500':
+          description: Error del servidor
+
+  /api/groups/{groupId}/add-movie:
+    post:
+      summary: Agregar una película a un grupo
+      tags:
+        - Grupos
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tmdbId:
+                  type: string
+                  example: "12345"
+                title:
+                  type: string
+                  example: "Inception"
+      responses:
+        '200':
+          description: Película agregada al grupo
+        '400':
+          description: Ya existe en el grupo o datos inválidos
+        '404':
+          description: Grupo no encontrado
+        '500':
+          description: Error del servidor
+
+  /api/groups/my:
+    get:
+      summary: Obtener los grupos del usuario actual
+      tags:
+        - Grupos
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de grupos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                    name:
+                      type: string
+                    members:
+                      type: array
+                      items:
+                        type: string
+                    movies:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          tmdbId:
+                            type: string
+                          title:
+                            type: string
+                          addedBy:
+                            type: string
+                          addedAt:
+                            type: string
+                            format: date-time
+        '500':
+          description: Error del servidor
+            /api/watchlist:
+    post:
+      summary: Crear una nueva lista personal
+      tags:
+        - Watchlists
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Mis películas favoritas
+      responses:
+        '201':
+          description: Lista creada exitosamente
+        '400':
+          description: Faltan campos obligatorios
+        '500':
+          description: Error del servidor
+
+  /api/watchlist/{listId}/add:
+    post:
+      summary: Agregar película a una lista personal
+      tags:
+        - Watchlists
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: listId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 664f3a9469cb17f123456789
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tmdbId:
+                  type: string
+                  example: "12345"
+                title:
+                  type: string
+                  example: "Inception"
+      responses:
+        '200':
+          description: Película añadida exitosamente
+        '404':
+          description: Lista no encontrada
+        '403':
+          description: No autorizado para modificar esta lista
+
+  /api/watchlist/my:
+    get:
+      summary: Obtener listas personales del usuario autenticado
+      tags:
+        - Watchlists
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Listas personales
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                    name:
+                      type: string
+                    owner:
+                      type: string
+                    movies:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          tmdbId:
+                            type: string
+                          title:
+                            type: string
+
+  /api/watchlist/friend/{username}:
+    get:
+      summary: Ver las listas de un amigo (si son amigos)
+      tags:
+        - Watchlists
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+            example: maria
+      responses:
+        '200':
+          description: Listas del amigo
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    movies:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          tmdbId:
+                            type: string
+                          title:
+                            type: string
+        '403':
+          description: No autorizado. No son amigos
+        '404':
+          description: Usuario no encontrado

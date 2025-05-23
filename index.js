@@ -18,6 +18,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument)); //http:
 const userRoutes = require('./routes/userRoutes');
 const emotionRoutes = require('./routes/emotionRoutes');
 const groupRoutes = require('./routes/groupRoutes');
+const watchlistRoutes = require('./routes/watchlistRoutes');
 
 // 4. Middleware global
 app.use(cors());               // Para permitir CORS
@@ -32,6 +33,7 @@ mongoose.connect(process.env.MONGO_URI)
 app.use('/api/users', userRoutes);
 app.use('/api/emotion', emotionRoutes);
 app.use('/api/groups', groupRoutes);
+app.use('/api/watchlists', watchlistRoutes);
 
 // 7. Inicia el servidor
 app.listen(PORT, () => {
