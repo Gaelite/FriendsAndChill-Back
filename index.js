@@ -17,6 +17,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument)); //http:
 
 const userRoutes = require('./routes/userRoutes');
 const emotionRoutes = require('./routes/emotionRoutes');
+const groupRoutes = require('./routes/groupRoutes');
 
 // 4. Middleware global
 app.use(cors());               // Para permitir CORS
@@ -30,6 +31,7 @@ mongoose.connect(process.env.MONGO_URI)
 // 6. Rutas protegidas (requieren autenticación)
 app.use('/api/users', userRoutes);
 app.use('/api/emotion', emotionRoutes);
+app.use('/api/groups', groupRoutes);
 
 // 7. Inicia el servidor
 app.listen(PORT, () => {
